@@ -1,0 +1,41 @@
+﻿# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment files (do not commit secrets)
+.env
+.env.*.local
+
+# Build artifacts
+build/
+dist/
+.eggs/
+*.egg-info/
+
+# Test/coverage caches
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.cache/
+
+# IDE/editor
+.vscode/
+.idea/
+*.code-workspace
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Databases
+*.db

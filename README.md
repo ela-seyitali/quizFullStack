@@ -14,9 +14,10 @@ Bu proje, FastAPI ve PostgreSQL kullanarak geliştirilmiş kapsamlı bir quiz uy
 
 - **Backend**: FastAPI
 - **Veritabanı**: PostgreSQL
-- **ORM**: SQLAlchemy
-- **Kimlik Doğrulama**: JWT
-- **Şifreleme**: bcrypt
+- **ORM**: SQLAlchemy 2.x
+- **Şema/Validasyon**: Pydantic v2
+- **Kimlik Doğrulama**: OAuth2 + JWT
+- **Şifreleme**: passlib `sha256_crypt`
 
 ## Kurulum
 
@@ -104,17 +105,18 @@ Uygulama http://localhost:8000 adresinde çalışacaktır.
 
 ### Kategoriler
 
-- `GET /categories/` - Tüm kategorileri listele
-- `GET /categories/{category_id}` - Belirli kategoriyi getir
-- `POST /categories/` - Yeni kategori oluştur (Admin)
+- `GET /quiz/categories/` - Quiz ekranı için tüm kategorileri listele (login gerekli)
+- `GET /categories/{category_id}` - Belirli kategoriyi getir (public)
+- `GET /admin/categories/` - Tüm kategorileri listele (admin)
+- `POST /admin/categories/` - Yeni kategori oluştur (admin)
 
 ### Sorular (Admin)
 
-- `GET /questions/` - Tüm soruları listele
-- `GET /questions/{question_id}` - Belirli soruyu getir
-- `POST /questions/` - Yeni soru oluştur
-- `PUT /questions/{question_id}` - Soru güncelle
-- `DELETE /questions/{question_id}` - Soru sil
+- `GET /admin/questions/` - Tüm soruları listele
+- `GET /admin/questions/{question_id}` - Belirli soruyu getir
+- `POST /admin/questions/` - Yeni soru oluştur
+- `PUT /admin/questions/{question_id}` - Soru güncelle
+- `DELETE /admin/questions/{question_id}` - Soru sil
 
 ### Quiz
 
@@ -124,6 +126,30 @@ Uygulama http://localhost:8000 adresinde çalışacaktır.
 - `GET /quiz/history/` - Quiz geçmişi
 - `GET /quiz/statistics/` - Quiz istatistikleri
 
+## Swagger UI ile Hızlı Test
+
+1. `http://localhost:8000/docs` adresine gidin
+2. Sağ üstten **Authorize** butonuna tıklayın ve giriş yapın:
+   - Username: `admin`
+   - Password: `admin123`
+3. `POST /admin/questions/` altında **Try it out** deyin ve aşağıdaki örneği gönderin:
+
+```json
+{
+  "question_text": "Test soru?",
+  "option_a": "A seçeneği",
+  "option_b": "B seçeneği",
+  "option_c": "C seçeneği",
+  "option_d": "D seçeneği",
+  "correct_answer": "A",
+  "category_id": 1
+}
+```
+
+Notlar:
+- `correct_answer` yalnızca "A" | "B" | "C" | "D" olabilir.
+- `category_id` 0 olamaz; mevcut bir kategori ID'si olmalıdır. `GET /admin/categories/` ile görebilirsiniz.
+
 ## Admin Kullanıcı Oluşturma
 
 İlk admin kullanıcısını oluşturmak için:
@@ -131,6 +157,8 @@ Uygulama http://localhost:8000 adresinde çalışacaktır.
 ```bash
 python create_admin.py
 ```
+
+Alternatif olarak `init_db.py` ile tablo ve başlangıç verilerini tek seferde oluşturabilirsiniz.
 
 ## Örnek Veriler Ekleme
 
@@ -184,8 +212,8 @@ Bu API, mobil uygulamalar için de kullanılabilir. Tüm endpoint'ler JSON forma
 
 ## Güvenlik
 
-- JWT token tabanlı kimlik doğrulama
-- bcrypt ile şifre hashleme
+- JWT token tabanlı kimlik doğrulama (OAuth2PasswordBearer)
+- passlib `sha256_crypt` ile şifre hashleme
 - Admin yetki kontrolü
 - SQL injection koruması (SQLAlchemy ORM)
 - Environment variables ile güvenli konfigürasyon

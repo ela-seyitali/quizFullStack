@@ -1,22 +1,13 @@
+"""
+Question schemas for API requests and responses.
+"""
+
 from pydantic import BaseModel, Field, validator
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 
-# Category schemas
-class CategoryBase(BaseModel):
-    name: str = Field(..., min_length=1, max_length=100)
-    description: Optional[str] = None
+from .category import Category
 
-class CategoryCreate(CategoryBase):
-    pass
-
-class Category(CategoryBase):
-    id: int
-    
-    class Config:
-        from_attributes = True
-
-# Question schemas
 class QuestionBase(BaseModel):
     question_text: str = Field(..., min_length=1, description="Soru metni")
     option_a: str = Field(..., min_length=1, max_length=200, description="A seçeneği")
@@ -56,45 +47,3 @@ class Question(QuestionBase):
     
     class Config:
         from_attributes = True
-
-# User schemas
-class UserBase(BaseModel):
-    username: str = Field(..., min_length=3, max_length=50)
-    email: str = Field(..., pattern=r"^[^@]+@[^@]+\.[^@]+$")
-
-class UserCreate(UserBase):
-    password: str = Field(..., min_length=6, description="Şifre en az 6 karakter olmalı")
-
-class User(UserBase):
-    id: int
-    is_admin: bool
-    created_at: datetime
-    
-    class Config:
-        from_attributes = True
-
-# Quiz session schemas
-class QuizSessionBase(BaseModel):
-    category_id: int = Field(..., gt=0, description="Kategori ID")
-
-class QuizSessionCreate(QuizSessionBase):
-    pass
-
-class QuizSession(QuizSessionBase):
-    id: int
-    user_id: int
-    score: int
-    total_questions: int
-    started_at: datetime
-    completed_at: Optional[datetime] = None
-    
-    class Config:
-        from_attributes = True
-
-# Token schemas
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-
-class TokenData(BaseModel):
-    username: Optional[str] = None 

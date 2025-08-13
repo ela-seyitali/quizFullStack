@@ -4,10 +4,14 @@ Veritabanı başlatma ve admin kullanıcı oluşturma scripti
 """
 
 import asyncio
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from sqlalchemy import text
-from database import engine, SessionLocal
-from models import Base, User, Category
-from auth import get_password_hash
+from app.core.database import engine, SessionLocal, Base
+from app.models import User, Category
+from app.core.security import get_password_hash
 import logging
 
 # Logging ayarları
@@ -69,14 +73,10 @@ def create_admin_user(db):
 def create_default_categories(db):
     """Varsayılan kategoriler oluştur"""
     try:
-        # Varsayılan kategoriler
+        # Temel kategoriler (sadece gerekli olanlar)
         default_categories = [
-            {"name": "Machine Learning", "description": "Machine learning algoritmaları ve kavramları hakkında sorular"},
-            {"name": "Artificial Intelligence", "description": "Yapay zeka kavramları ve uygulamaları hakkında sorular"},
-            {"name": "Programming", "description": "Programlama dilleri ve kavramları hakkında sorular"},
-            {"name": "Cyber Security", "description": "Siber güvenlik ve bilgi güvenliği hakkında sorular"},
-            {"name": "Data Science", "description": "Veri bilimi ve analizi hakkında sorular"},
-            {"name": "Web Development", "description": "Web geliştirme ve teknolojileri hakkında sorular"}
+            {"name": "General Knowledge", "description": "Genel bilgi soruları"},
+            {"name": "Technology", "description": "Teknoloji ile ilgili sorular"}
         ]
         
         for cat_data in default_categories:
@@ -87,7 +87,7 @@ def create_default_categories(db):
                 logger.info(f"✅ Kategori oluşturuldu: {cat_data['name']}")
         
         db.commit()
-        logger.info("✅ Varsayılan kategoriler oluşturuldu!")
+        logger.info("✅ Temel kategoriler oluşturuldu!")
         
     except Exception as e:
         logger.error(f"❌ Kategori oluşturma hatası: {e}")

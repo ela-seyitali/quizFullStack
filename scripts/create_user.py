@@ -63,7 +63,7 @@ def main():
     if user:
         print("\n🎉 Kullanıcı oluşturuldu!")
         print(f"🔗 Swagger UI: http://127.0.0.1:8000/docs")
-        print(f"📝 Login endpoint: POST /token")
+        print(f"📝 Bu API'de authentication sistemi bulunmamaktadır")
     else:
         print("\n❌ Kullanıcı oluşturulamadı!")
 

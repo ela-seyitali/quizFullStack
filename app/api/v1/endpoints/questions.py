@@ -8,22 +8,22 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.security import get_current_admin_user, get_current_user
 from app.crud.question import (
     create_question, get_questions, get_questions_by_category,
     get_question, update_question, delete_question
 )
 from app.crud.category import get_category
 from app.schemas.question import Question, QuestionCreate, QuestionUpdate
-from app.schemas.user import User
+from app.core.security import get_current_admin_user
+from app.models.user import User
 
 router = APIRouter()
 
 @router.post("/admin/questions/", response_model=Question, tags=["admin"])
 async def create_new_question(
     question: QuestionCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """Create a new question (admin only)"""
     return create_question(db=db, question=question)
@@ -32,8 +32,8 @@ async def create_new_question(
 async def read_questions(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """Get all questions (admin only)"""
     questions = get_questions(db, skip=skip, limit=limit)
@@ -42,8 +42,8 @@ async def read_questions(
 @router.get("/admin/questions/{question_id}", response_model=Question, tags=["admin"])
 async def read_question(
     question_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """Get a specific question by ID (admin only)"""
     db_question = get_question(db, question_id=question_id)
@@ -55,8 +55,8 @@ async def read_question(
 async def update_existing_question(
     question_id: int,
     question_update: QuestionUpdate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """Update a question (admin only)"""
     db_question = update_question(db, question_id=question_id, question_update=question_update)
@@ -67,8 +67,8 @@ async def update_existing_question(
 @router.delete("/admin/questions/{question_id}", tags=["admin"])
 async def delete_existing_question(
     question_id: int,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """Delete a question (admin only)"""
     db_question = delete_question(db, question_id=question_id)
@@ -80,8 +80,7 @@ async def delete_existing_question(
 async def get_quiz_questions(
     category_id: int,
     limit: int = 10,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    db: Session = Depends(get_db)
 ):
     """Get questions for quiz (without correct answers)"""
     # Check if category exists

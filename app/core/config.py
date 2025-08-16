@@ -15,9 +15,11 @@ class Settings:
     DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:101108aSy@localhost:5432/quiz_db")
     
     # Security
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "+BXcJb8=g9KMQyD##$tEa=S_y8-A9S02")
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-here-change-in-production")
     ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
+    
+
     
     # Application
     DEBUG: bool = os.getenv("DEBUG", "True").lower() == "true"

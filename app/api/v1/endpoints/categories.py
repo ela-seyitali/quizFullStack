@@ -7,18 +7,18 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.core.database import get_db
-from app.core.security import get_current_admin_user
 from app.crud.category import create_category, get_categories, get_category
 from app.schemas.category import Category, CategoryCreate
-from app.schemas.user import User
+from app.core.security import get_current_admin_user
+from app.models.user import User
 
 router = APIRouter()
 
 @router.post("/admin/categories/", response_model=Category, tags=["admin"])
 async def create_new_category(
     category: CategoryCreate,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """Create a new category (admin only)"""
     return create_category(db=db, category=category)
@@ -27,8 +27,8 @@ async def create_new_category(
 async def read_categories(
     skip: int = 0, 
     limit: int = 100, 
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_admin_user)
+    current_user: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """Get all categories (admin only)"""
     categories = get_categories(db, skip=skip, limit=limit)

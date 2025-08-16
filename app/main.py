@@ -32,7 +32,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Custom OpenAPI schema
+# Include routers
+app.include_router(auth.router, prefix=settings.API_V1_STR)
+app.include_router(categories.router, prefix=settings.API_V1_STR)
+app.include_router(questions.router, prefix=settings.API_V1_STR)
+app.include_router(quiz.router, prefix=settings.API_V1_STR)
+
+# Custom OpenAPI schema with security
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
@@ -46,42 +52,20 @@ def custom_openapi():
     
     # Add security schemes
     openapi_schema["components"]["securitySchemes"] = {
-        "OAuth2PasswordBearer": {
-            "type": "oauth2",
-            "flows": {
-                "password": {
-                    "tokenUrl": "token",
-                    "scopes": {}
-                }
-            }
-        },
         "BearerAuth": {
             "type": "http",
             "scheme": "bearer",
-            "bearerFormat": "JWT"
+            "bearerFormat": "JWT",
         }
     }
     
-    # Add security to admin endpoints
-    for path in openapi_schema["paths"]:
-        if path.startswith("/admin/"):
-            for method in openapi_schema["paths"][path]:
-                if method in ["get", "post", "put", "delete"]:
-                    openapi_schema["paths"][path][method]["security"] = [
-                        {"OAuth2PasswordBearer": []},
-                        {"BearerAuth": []}
-                    ]
+    # Add global security requirement
+    openapi_schema["security"] = [{"BearerAuth": []}]
     
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
 app.openapi = custom_openapi
-
-# Include routers
-app.include_router(auth.router, prefix=settings.API_V1_STR)
-app.include_router(categories.router, prefix=settings.API_V1_STR)
-app.include_router(questions.router, prefix=settings.API_V1_STR)
-app.include_router(quiz.router, prefix=settings.API_V1_STR)
 
 # Root endpoint
 @app.get("/", tags=["default"])
